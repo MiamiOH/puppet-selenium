@@ -11,8 +11,6 @@ describe 'selenium', :type => :class do
       :java                 => 'java',
       :version              => DEFAULT_VERSION,
       :url                  => '',
-      :download_timeout     => '90',
-      :nocheckcertificate   => false,
       :manage_logrotate     => true,
       :manage_installation  => true,
     }
@@ -37,7 +35,6 @@ describe 'selenium', :type => :class do
       should contain_group(p[:group]).with(
         :system => true
       )
-      should contain_class('wget')
       should contain_class('selenium').with_version(p[:version])
       should contain_file("#{p[:install_root]}").with({
         'ensure' => 'directory',
@@ -60,13 +57,6 @@ describe 'selenium', :type => :class do
         'owner'  => 'root',
         'group'  => 'root',
         'target' => "#{p[:install_root]}/log",
-      })
-      should contain_wget__fetch('selenium-server-standalone').with({
-        'source'             => "https://selenium-release.storage.googleapis.com/#{path_version}/selenium-server-standalone-#{p[:version]}.jar",
-        'destination'        => "#{p[:install_root]}/jars/selenium-server-standalone-#{p[:version]}.jar",
-        'timeout'            => p[:download_timeout],
-        'nocheckcertificate' => p[:nocheckcertificate],
-        'execuser'           => p[:user],
       })
       should contain_logrotate__rule('selenium').with({
         :path          => "#{p[:install_root]}/log",
@@ -160,41 +150,6 @@ describe 'selenium', :type => :class do
       end
     end
 
-    context 'download_timeout => 42' do
-      p = { :download_timeout => '42' }
-      let(:params) { p }
-
-      it_behaves_like 'selenium', p
-    end
-
-    context 'download_timeout => []' do
-      p = { :download_timeout => [] }
-      let(:params) { p }
-
-      it 'should fail' do
-        expect {
-          should contain_class('selenium')
-        }.to raise_error
-      end
-    end
-
-    context 'nocheckcertificate => true' do
-      p = { :nocheckcertificate => true }
-      let(:params) { p }
-
-      it_behaves_like 'selenium', p
-    end
-
-    context 'nocheckcertificate => []' do
-      p = { :nocheckcertificate => [] }
-      let(:params) { p }
-
-      it 'should fail' do
-        expect {
-          should contain_class('selenium')
-        }.to raise_error
-      end
-    end
   end
 
 end

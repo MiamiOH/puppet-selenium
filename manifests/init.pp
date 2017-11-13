@@ -13,8 +13,6 @@ class selenium(
   $java                = $selenium::params::java,
   $version             = $selenium::params::version,
   $url                 = undef,
-  $download_timeout    = $selenium::params::download_timeout,
-  $nocheckcertificate  = false,
   $manage_logrotate    = true,
   $manage_installation = true,
 ) inherits selenium::params {
@@ -25,11 +23,8 @@ class selenium(
   validate_string($version)
   validate_string($url)
   validate_string($download_timeout)
-  validate_bool($nocheckcertificate)
   validate_bool($manage_logrotate)
   validate_bool($manage_installation)
-
-  include wget
 
   if $manage_user {
     user { $user:
@@ -86,13 +81,13 @@ class selenium(
   }
 
   if $manage_installation {
-    wget::fetch { 'selenium-server-standalone':
-      source             => $jar_url,
-      destination        => "${jar_path}/${jar_name}",
-      timeout            => $download_timeout,
-      nocheckcertificate => $nocheckcertificate,
-      execuser           => $user,
-      require            => File[$jar_path],
+    archive { "${jar_path}/${jar_name}":
+      source       => $jar_url,
+      creates      => "${jar_path}/${jar_name}",
+      require      => File[$jar_path],
+      cleanup      => false,
+      user         => $user,
+      proxy_server => $profile::core::params::proxy_uri,
     }
   }
 
