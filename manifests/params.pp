@@ -14,7 +14,7 @@ class selenium::params {
   $hub_options      = '-role hub'
   $node_options     = "${server_options} -role node"
   $java             = 'java'
-  $version          = '2.45.0'
+  $version          = '3.7.1'
   $default_hub      = 'http://localhost:4444/grid/register'
   $default_classpath = []
   case $::osfamily {
