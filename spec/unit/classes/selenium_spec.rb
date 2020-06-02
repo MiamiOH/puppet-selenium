@@ -47,10 +47,8 @@ describe 'selenium', :type => :class do
         'group'  => p[:group],
       })
       should contain_file("#{p[:install_root]}/log").with({
-        'ensure' => 'directory',
-        'owner'  => p[:user],
-        'group'  => p[:group],
-        'mode'   => '0755',
+        'ensure' => 'link',
+        'target' => '/var/log/selenium',
       })
       should contain_file('/var/log/selenium').with({
         'ensure' => 'link',

@@ -52,13 +52,10 @@ class selenium(
     $jar_url = "https://selenium-release.storage.googleapis.com/${variant}"
   }
 
-  File {
-    owner => $user,
-    group => $group,
-  }
-
   file { $install_root:
     ensure => directory,
+    owner  => $user,
+    group  => $group,
   }
 
   $jar_path = "${install_root}/jars"
@@ -66,18 +63,23 @@ class selenium(
 
   file { $jar_path:
     ensure => directory,
+    owner  => $user,
+    group  => $group,
   }
 
   file { $log_path:
-    ensure => directory,
-    mode   => '0755',
+    ensure  => link,
+    owner   => $user,
+    group   => $group,
+    target  => '/var/log/selenium',
+    require => File['/var/log/selenium'],
   }
 
   file { '/var/log/selenium':
-    ensure => link,
-    owner  => 'root',
-    group  => 'root',
-    target => $log_path,
+    ensure => directory,
+    owner  => $user,
+    group  => $group,
+    mode   => '0755',
   }
 
   if $manage_installation {
@@ -96,7 +98,7 @@ class selenium(
       path          => $log_path,
       rotate_every  => 'weekly',
       missingok     => true,
-      rotate        => '4',
+      rotate        => 4,
       compress      => true,
       delaycompress => true,
       copytruncate  => true,
